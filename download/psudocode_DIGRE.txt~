@@ -1,0 +1,112 @@
+Title: The challenge of predicting synergistic and antagonistic compound-pair activity from individual compound perturbations
+
+Mukesh Bansal,*,#, Jichen Yang,*, Charles Karan,*, Michael Patrick Menden, James C. Costello, Hao Tang, Guanghua Xiao, Yajuan Li, Jeffrey Allen, Rui Zhong, Beibei Che8, Minsoo Kim, Tao Wang, Laura Heiser, Ronald Realubit, Michela Mattioli, Mariano Alvarez, Yao Shen, NCI-DREAM community, Daniel Gallahan, Dinah Singer, Julio Saez-Rodriguez, Yang Xie, Gustavo Stolovitzky, Andrea Califano
+
+###################################
+####  pseudo-code for DIGRE model  ####
+###################################
+
+### data clean ###
+Ly3_expr =  <read data from gene expression data set>
+#Ly3_expr is a 48789X16 matrix. The first column contains prob name and the second column contains gene name
+#the gene expression values were log2 transformed.
+Graph = merge(<8 cell growth related pathways>)
+BigGraph = merge(<32 global pathways>)
+bigGraphnodes = getnodes(Graph)
+bigGraphnodes2 = getnodes(BigGraph)
+doseRes1 = <cell killed by IC20>
+doseRes2 = <cell killed by double doses of IC20>
+
+### combinatorial effect ###
+for i = 3 to ncol(Ly3_expr){
+	for j = 3 to ncol(Ly3_expr){
+		if (i == j) next
+		drugU1 = <up-regulated gene set for drug 1 where each gene has fold change > 1.5>
+		drugU2 = <up-regulated gene set for drug 2 where each gene has fold change > 1.5>
+		drugU1 = drugU1[<remove duplicated>]
+		drugU2 = drugU2[<remove duplicated>]
+		U1ID = <translate gene ID to KEGG ID for drugU1>
+		U2ID = <translate gene ID to KEGG ID for drugU2>
+
+		drugD1 = <down-regulated gene set for drug 1 where each gene has fold change > 1.5>
+		drugD2 = <down-regulated gene set for drug 2 where each gene has fold change > 1.5>
+		drugD1 = drugD1[<remove duplicated>]
+		drugD2 = drugD2[<remove duplicated>]
+		D1ID = <translate gene ID to KEGG ID for drugD1>
+		D2ID = <translate gene ID to KEGG ID for drugD2>
+
+		Ushared = U1ID[U1ID %in% U2ID]
+		U1ID = U1ID[!U1ID %in% Ushared]
+		U2ID = U2ID[!U2ID %in% Ushared]
+		Dshared = D1ID[D1ID %in% D2ID]
+		D1ID = D1ID[!D1ID %in% Dshared]
+		D2ID = D2ID[!D2ID %in% Dshared]
+
+		U1nodes = U1ID[U1ID %in% bigGraphnodes]
+		U2nodes = U2ID[U2ID %in% bigGraphnodes2]
+		D1nodes = D1ID[D1ID %in% bigGraphnodes]
+		D2nodes = D2ID[D2ID %in% bigGraphnodes2]
+
+		### for drug 1 up-regulated ###
+		U1graph = getsubGraph(U1nodes,bigGraph)
+		U1edges = getEdge(U1graph)
+		U1p = 0;U1n = 0;
+		if(length(U1edges)>0){
+			for(k in 1:length(U1edges)){
+				if(U1edges[k] type is "activation" or "expression") then U1p=U1p+1
+				if(U1edges[k] type is "inhibition") then U1n=U1n+1
+			}
+		}
+
+      		### UP+UP ###
+      		UID = union(U1ID, U2ID)
+      		Up = 0;Un = 0;
+      		sharedPositive = Ushared[Ushared %in% bigGraphnodes]
+      		Unodes = UID[UID %in% bigGraphnodes2]
+      		Ugraph = getsubGraph(Unodes,bigGraph2)
+      		Uedges = getEdge(Ugraph)
+      		if(length(Uedges)>0){
+      			for(k in 1:length(Uedges)){
+      				if(<Uedges second node> %in% U1nodes){
+      					if(<regulation type is "activation" or "expression">) Up=Up+1
+      					if(<regulation type is "inhibition">) Un=Un+1
+      				}
+      			}
+     		 }
+
+     		 ### UP+DOWN ###
+      		UDID = union(U1ID,D2ID)
+      		UDp = 0;UDn = 0;
+     		UDnodes = UDID[UDID %in% bigGraphnodes]
+	      	UDn = sum((duplicated(UDnodes)))
+	      	UDnodes = UDID[UDID %in% bigGraphnodes2]
+	      	common = U1ID[U1ID %in% D2ID]
+	      	UDnodes = UDnodes[!UDnodes %in% common]
+	      	UDnodes = UDnodes[!duplicated(UDnodes)]
+	      	UDgraph = getsubGraph(UDnodes,BigGraph)
+	      	UDedges = getEdge(UDgraph)
+	      	if(length(UDedges)>0){
+	        		for(k in 1:length(UDedges)){
+	          			if(<UDedges second node> %in% U1nodes and <UDedges first node> %in% D2ID){
+	            			if(<regulation type is "activation" or "expression">) UDn=UDn+1
+	            			if(<regulation type is "inhibition">) UDp=UDp+1
+	          			}	          			
+	        		}
+	      	}
+	      	Upositive=Up+UDp-U1p
+	      	Unegtive=Un+UDn-U1n
+
+	      	 ### for drug1 down-regulated ###
+	      	 # do same thing and get Dpositive and Dnegtive
+	      	positive = Upositive+Dpositive
+      		negtive = Unegtive+Dnegtive
+      
+      		ratio = (length(sharedPositive)+length(sharedPositive2)+positive-negtive)/(length(U2ID)+length(D2ID)+length(Ushared)+length(Dshared))
+      		effect = 1-(1-ratio*doseRes2[j])*(1-(1-ratio)*doseRes1[j])*(1-doseRes1[i])
+      		effect = effect-(1-(1-doseRes1[i])*(1-doseRes1[j]))
+      		save (effect)
+  	}
+}
+finaleffect = average(<effects of each pair>)
+
+
