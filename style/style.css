@@ -112,12 +112,14 @@ header a {
     font-family: AlrightSans, arial, sans-serif;
     line-height: 40px;
     padding: 0 20px;
+    text-align: justify;
 }
 
 .in_introduction_detail {
     line-height: 30px;
-    padding: 0 20px;
+    padding: 5px 20px;
     font-size: 20px;
+    text-align: justify;
 }
 
 .in_algorithm {

@@ -1,3 +1,3 @@
 host:localhost
 username:root
-password:zhan.0419
+password:zhan0419

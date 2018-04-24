@@ -10,9 +10,17 @@
     <script>
         $(document).ready(function () {
             $("#onlineAnalysis").addClass("active");
-            $(".oa_introduction_detail").hide();
-            $("button").click(function () {
-                $(".oa_introduction_detail").toggle();
+            $("#inputs_detail").hide();
+            $("#inputs").click(function () {
+                $("#inputs_detail").slideToggle();
+            });
+            $("#methods_detail").hide();
+            $("#methods").click(function () {
+                $("#methods_detail").slideToggle();
+            });
+            $("#outputs_detail").hide();
+            $("#outputs").click(function () {
+                $("#outputs_detail").slideToggle();
             });
             $("#oa_uploadGeneNet").hide();
             $("#oa_netOption").change(function () {
@@ -32,36 +40,81 @@
     <div class="oa_article">
         <div class="module">
             <p class="oa_introduction_abstract">
-                The DIGRE take three inputs to do the prediction.
-                <button class="oa_button">&nbsp;Detailed Instruction...</button>
+                I. DIGREM inputs instruction
+                <button class="oa_button" id="inputs">&nbsp;Details ...</button>
             </p>
-
-            <div class="oa_introduction_detail">
-                <div class="oa_introduction_detail_item">1. Drug treated gene expression data.<br/></div>
-                <div class="oa_introduction_detail_content">Gene expression profiles of single compound-treated and
-                    negative control-treated cell line sample. Data needs to be log2 transformed.
-                </div>
-                <br/>
-                <div class="oa_introduction_detail_item">2. Dose-response curve data.<br/></div>
-                <div class="oa_introduction_detail_content">Dose-response curves for viability of cell line you used for
-                    gene expression assay. For each compound, two data point(viability reduction in IC20 and double dose
+            <div class="oa_introduction_detail" id="inputs_detail">
+                <div class="oa_introduction_detail_item">1. Drug treated gene expression data<br/></div>
+                <div class="oa_introduction_detail_content">
+                    Gene expression profiles of single compound-treated and
+                    negative control-treated cell line sample. Data needs to be log transformed.
+                </div><br/>
+                <div class="oa_introduction_detail_item">2. Dose-response curve data (optional)<br/></div>
+                <div class="oa_introduction_detail_content">
+                    Dose-response curves for viability of cell line you used for gene expression assay.
+                    For each compound, two data point(viability reduction in IC20 and double dose
                     of IC20) from dose-response curve is desired.
-                </div>
-                <br/>
+                </div><br/>
                 <div class="oa_introduction_detail_item">3. Pathway information<br/></div>
-                <div class="oa_introduction_detail_content">Pathway information is used to estimate drug similarity of
-                    effect on upstream and downstream genes.<br/>
-                    Currently, the DIGRE algorithm use two pathway information, the KEGG pathway information and
-                    self-constructed gene network information. User can specify to use either of them. (Currently, the
-                    gene network only has lymphoma dataset, so it’s better to use KEGG pathway information if your data
-                    is generated on other cancer cell lines.)<br/><br/></div>
-                <div class="oa_introduction_detail_content" style="padding: 0;">By taking the above three input, the
-                    DIGRE algorithm will calculate pair synergistic score of all the possible combination of the
-                    compound you provided, and their rank from the most synergistic to the most antagonist. Larger score
-                    indicates high possibility of the pair to have synergistic effect, and vice versa. (Notice that this
-                    algorithm focus more on predicting the relative rank of your compound pairs not the exact
-                    synergistic strength. If you want to do that, maybe you should involve positive control in your
-                    experiment. And also the score calculated by two pathway information is not comparable.)
+                <div class="oa_introduction_detail_content">
+                    Pathway information is used to estimate drug similarity of effect on upstream and downstream genes.
+                    The KEGG pathway is a universal gene network database, but is not context-specific. Users can choose
+                    to upload their own gene-gene interaction information if their data is generated on a specific
+                    cancer cell lines that has unique gene regulatory relationship.<br/>
+                </div><br/>
+                <div class="oa_introduction_detail_content" style="padding: 0;">
+                    By taking the above three input, the DIGREM will calculate pair synergistic score of all the
+                    possible combination of the compound you provided, and their rank from the most synergistic to
+                    the most antagonist. Larger score indicates high possibility of the pair to have synergistic
+                    effect, and vice versa.
+                </div>
+            </div>
+            <!-------------- method ---------------->
+            <p class="oa_introduction_abstract">
+                II. DIGREM methods instruction
+                <button class="oa_button" id="methods">&nbsp;Details ...</button>
+            </p>
+            <div class="oa_introduction_detail" id="methods_detail">
+                <p>
+                    The DIGREM will automatically call three methods to do prediction if the requirement is meet,
+                    and output the predicted result of each method.
+                </p><br/>
+                <div class="oa_introduction_detail_item">1. DIGRE model<br/></div>
+                <div class="oa_introduction_detail_content">
+                    DIGRE is the method that has the least requirement, therefore is always run. It take the
+                    above mentioned three input to do prediction with tolerance of no dose response data.
+                </div><br/>
+                <div class="oa_introduction_detail_item">2. IUPUI_CCBB model<br/></div>
+                <div class="oa_introduction_detail_content">
+                    IUPUI_CCBB method requires the gene expression data to have at least three replicates for each drug
+                    (to ensure enough statistical power). If the requirement is meet, this method will be run, and
+                    prediction will be added to final output report, otherwise this method is skipped.
+                </div><br/>
+                <div class="oa_introduction_detail_item">3. Gene set-based model<br/></div>
+                <div class="oa_introduction_detail_content">
+                    Gene set-based method require the gene expression data contains at least 16 columns to do
+                    normalization. If the requirement is meet, this method will be run, and
+                    prediction will be added to final output report, otherwise this method is skipped.
+                </div>
+            </div>
+            <!-------------- output ---------------->
+            <p class="oa_introduction_abstract">
+                III. DIGREM outputs instruction
+                <button class="oa_button" id="outputs">&nbsp;Details ...</button>
+            </p>
+            <div class="oa_introduction_detail" id="outputs_detail">
+                <div class="oa_introduction_detail_item">1. Heatmap<br/></div>
+                <div class="oa_introduction_detail_content">
+                    Heatmap of DIGRE predicted synergistic scores. Dark blue represents high predicted synergy value,
+                    white color represents low synergy value. Only upper triangle is displayed.
+                </div><br/>
+                <div class="oa_introduction_detail_item">2. Bar plot<br/></div>
+                <div class="oa_introduction_detail_content">
+                    Bar plot of compound pairs with top DIGRE synergistic scores.
+                </div><br/>
+                <div class="oa_introduction_detail_item">3. Download file<br/></div>
+                <div class="oa_introduction_detail_content">
+                    Raw predicted score of all compound pairs by DIGRE, IUPUI_CCBB and gene set based method.
                 </div>
             </div>
         </div>
@@ -75,8 +128,7 @@
                     <input type="text" placeholder="Name (optional) <?php if (isset($_GET["isWrongName"]) && $_GET["isWrongName"] == 1) {
                         echo "Please input correct name.";
                     } ?>" class="textbox" name="name"/>
-                    <input type="text"
-                           placeholder="Organization (optional) <?php if (isset($_GET["isWrongOrganization"]) && $_GET["isWrongOrganization"] == 1) {
+                    <input type="text" placeholder="Organization (optional) <?php if (isset($_GET["isWrongOrganization"]) && $_GET["isWrongOrganization"] == 1) {
                                echo "Please input correct organization.";
                            } ?>" class="textbox" name="organization"/>
                     <input type="text" placeholder="Email (optional) <?php if (isset($_GET["isWrongEmail"]) && $_GET["isWrongEmail"] == 1) {
@@ -114,8 +166,7 @@
                                 <label class="modal__bg" for="modal-1"></label>
                                 <div class="modal__inner">
                                     <label class="modal__close" for="modal-1"></label>
-                                    <img style="width: 500px; padding: 30px 0px;" src="images/sampleInputSample.png"
-                                         alt=""/>
+                                    <img style="width: 500px; padding: 30px 0;" src="images/sampleInputSample.png" alt=""/>
                                     <p style="font-size: 17px;">Only accept CSV fil. Maximum file size 10M. <br/>
                                         The first column must be gene names. The first row of other columns should be
                                         compound name. <br/>
@@ -129,26 +180,18 @@
                             </div>
                         </td>
                     </tr>
-
+                    <tr><td><br/></td></tr>
                     <tr>
                         <td>
-                            <br/>
-                        </td>
-                    </tr>
-                    <tr>
-
-                        <td>
-                            <p class="oa_reminder"><span style="color: red;">*&nbsp;</span>Dose data:</p>
+                            <p class="oa_reminder"><span style="color: red;">&nbsp;&nbsp;</span>Dose data (optional):</p>
                         </td>
                         <td>
                             <label>
                                 <input id="oa_dosefile" name="dosefile" type="file" class="inputfile inputfile-1"/>
-                                <label for="oa_dosefile"><img style="width:20px; padding-right: 10px;"
-                                                              src="images/pin.png" alt=""/><span
-                                        style="padding-bottom: 5px;">Choose a file&hellip;</span></label>
-
+                                <label for="oa_dosefile">
+                                    <img style="width:20px; padding-right: 10px;" src="images/pin.png" alt=""/><span style="padding-bottom: 5px;">Choose a file&hellip;</span>
+                                </label>
                             </label>
-
                         </td>
 
                         <td style="padding: 0 0 0 20px;">
@@ -162,8 +205,7 @@
                                 <label class="modal__bg_2" for="modal-1_2"></label>
                                 <div class="modal__inner_2">
                                     <label class="modal__close_2" for="modal-1_2"></label>
-                                    <img style="width: 500px; padding: 30px 0px;" src="images/doseInputSample.png"
-                                         alt=""/>
+                                    <img style="width: 500px; padding: 30px 0;" src="images/doseInputSample.png" alt=""/>
                                     <p style="font-size: 17px;">Only accept CSV fil. Maximum file size 60K. <br/>
                                         The content should have three rows. <br/>
                                         The first row should be compound names. Each compound should only have one
@@ -172,19 +214,13 @@
                                         labeled as "doseRes1".<br/>
                                         The third row should be the values of doseRes2. The first column should be
                                         labeled as "doseRes2".<br/><br/>
-                                        Example:<a href="dose.php"><img style="width: 40px; padding-left: 15px;" src="images/down.png"/></a><br/></br>
+                                        Example:<a href="dose.php"><img style="width: 40px; padding-left: 15px;" src="images/down.png"/></a><br/><br/>
                                     </p>
                                 </div>
                             </div>
                         </td>
                     </tr>
-
-                    <tr>
-                        <td>
-                            <br/>
-                        </td>
-                    </tr>
-
+                    <tr><td><br/></td></tr>
                     <tr>
                         <td>
                             <p class="oa_reminder" style="padding-top: 10px;"><span style="color: red;">*&nbsp;</span>Gene Connectivity:</p>
@@ -221,7 +257,7 @@
                                 <label class="modal__bg_2" for="modal-1_3"></label>
                                 <div class="modal__inner_2">
                                     <label class="modal__close_2" for="modal-1_3"></label>
-                                    <img style="width: 200px; padding: 30px 0px;" src="images/networkInputSample.PNG"
+                                    <img style="width: 200px; padding: 30px 0;" src="images/networkInputSample.PNG"
                                          alt=""/>
                                     <p style="font-size: 17px;">Only accept CSV file. Maximum file size 1M. <br/>
                                         The file should have two columns to specify the two connected genes with their SYMBOL name. <br/>
@@ -276,6 +312,10 @@
 
                                 if (isset($_GET["isDoseFileTypeNotGood"]) && $_GET["isDoseFileTypeNotGood"] == 1) {
                                     echo "<br/>Please upload CSV dose data file.";
+                                }
+
+                                if (isset($_GET["isFileSizeNotGood"]) && $_GET["isDoseFileSizeNotGood"] == 1) {
+                                    echo "<br/>Dose data file size too big.";
                                 }
 
                                 if (isset($_GET["isNetworkFileTypeNotGood"]) && $_GET["isNetworkFileTypeNotGood"] == 1) {

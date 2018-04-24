@@ -22,6 +22,9 @@
 
 include "../../dbincloc/drugCombination.inc";
 
+$message = "";
+$status = "0";
+
 //open the database connection
 $db = new mysqli($hostname, $usr, $pwd, $dbname);
 if ($db->connect_error) {
@@ -32,9 +35,6 @@ if (isset($_GET['jobid'])) {
     $jobid = mysqli_real_escape_string($db, $_GET['jobid']);
 }
 
-$message = "";
-$status = "0";
-
 if (!empty($jobid)) {
     if ($result = $db->prepare("SELECT Status FROM Jobs where JOBID = ?;")) {
         $result->bind_param("s", $jobid);
@@ -42,13 +42,14 @@ if (!empty($jobid)) {
         $result->store_result();
         $result->bind_result($status);
         $result->fetch();
+        $result->close();
 
         if ($result->num_rows > 0) {
             if ($status == "2" || $status == "3") {
                 echo "<script>location.href='onlineAnalysisResult.php?jobid=" . $jobid . "'</script>";
                 exit();
             } else {
-                echo "<body onload=\"JavaScript:timedRefresh(5000);\">\n";
+                echo "<body onload='timedRefresh(5000);'>\n";
             }
         } else {
             echo "<body>\n";
@@ -74,9 +75,10 @@ $db->close();
         <h2>Your job has been submitted!</h2>
         <br/><br/>
         <img src="images/Preloader_8.gif" style="margin: 0 330px 20px 330px;"/><br/><br/>
-        <p style="font-size: 17px;">The job will take about one min. This page will refresh automatically each 5 seconds. <br/>
-            When your job is finished, the results will be shown on this page.
-            <br/><br/>You can record the following URL and check your results later. Your query will be kept on our
+        <p style="font-size: 17px;">The job will take about one to ten minuts based on the data your provided. This page will refresh
+            automatically each 5 seconds. <br/>
+            When your job is finished, the results will be shown on this page.<br/><br/>
+            You can record the following URL and check your results later. Your query will be kept on our
             service for a long time.<br/>
 
             <a href="http://qbrc2.swmed.edu/drugcombination/onlineAnalysisResult.php?jobid=<?php echo $jobid ?>">http://qbrc2.swmed.edu/drugcombination/onlineAnalysisResult.php?jobid=<?php echo $jobid ?></a>
@@ -85,5 +87,5 @@ $db->close();
     </div>
 </article>
 <?php include "footer.php"; ?>
-</body>
-</html>
+
+

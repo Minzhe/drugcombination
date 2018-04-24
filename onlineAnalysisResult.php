@@ -23,6 +23,9 @@
 
 include "../../dbincloc/drugCombination.inc";
 
+$message = "";
+$status = "0";
+
 //open the database connection
 $db = new mysqli($hostname, $usr, $pwd, $dbname);
 if ($db->connect_error) {
@@ -33,8 +36,6 @@ if (isset($_GET['jobid'])) {
     $jobid = mysqli_real_escape_string($db, $_GET['jobid']);
 }
 
-$message = "";
-$status = "0";
 
 if (!empty($jobid)) {
     if ($result = $db->prepare("SELECT Status FROM Jobs where JOBID = ?")) {
@@ -43,6 +44,7 @@ if (!empty($jobid)) {
         $result->store_result();
         $result->bind_result($status);
         $result->fetch();
+        $result->close();
 
         if ($result->num_rows > 0) {
             if ($status == "2") {
@@ -51,7 +53,7 @@ if (!empty($jobid)) {
                 echo "<body>\n";
                 $message = "Job failed with unexpected reason.";
             } else {
-                echo "<body onload=\"JavaScript:timedRefresh(5000);\">\n";
+                echo "<body onload='timedRefresh(5000);'>\n";
                 $message = "Your job is being processed. Please wait.";
             }
         } else {
@@ -125,5 +127,4 @@ $db->close();
 
 <?php include "footer.php"; ?>
 
-</body>
 </html>
