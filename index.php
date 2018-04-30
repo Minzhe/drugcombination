@@ -87,8 +87,14 @@
         <br/><br/>
 
         <div class="in_algorithm">
-            <p class="in_algorithm_title">Work Flow Chart</p>
+            <p class="in_algorithm_title">DIGRE model workflow</p>
             <img style="width: 920px;" src="images/algorithm.jpg"/>
+            <br/><br/>
+        </div>
+
+        <div class="in_algorithm">
+            <p class="in_algorithm_title">IUPUI_CCBB and gene set-based method workflow</p><br/>
+            <img style="width: 920px;" src="images/IUPUI.geneset.png"/>
         </div>
 
         
