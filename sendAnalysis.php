@@ -17,7 +17,7 @@ $fileSizeLimit = 10000000;               // file size no larger than 10M
 
 
 // --------------------------------- expression file --------------------------------- //
-if ($_FILES["userfile"]["size"] > 0 && $_FILES["dosefile"]["size"] > 0) {
+if ($_FILES["userfile"]["size"] > 0) {
     $tmpName = $_FILES['userfile']['tmp_name'];
     $fileSize = $_FILES['userfile']['size'];
     $fileType = $_FILES['userfile']['type'];

@@ -42,7 +42,6 @@ if (!empty($jobid)) {
         $result->store_result();
         $result->bind_result($status);
         $result->fetch();
-        $result->close();
 
         if ($result->num_rows > 0) {
             if ($status == "2" || $status == "3") {

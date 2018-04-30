@@ -1,0 +1,59 @@
+"Drug combination" website deployment document:
+
+Cut the “program” folder and paste to a folder that can not be reached by website users.
+
+-----------------    Importing tables in database   ---------------
+create a database called  “drugCombinationRemoteR”
+The “program/drugCombinationRemoteR.sql.txt” file is for importing
+the “drugCombinationRemoteR” table in mysql.
+
+create a database called  “humanGenes”
+The “program/humanGenes.sql.txt” file is for importing the “humanGenes” table in mysql which
+is needed for validating the input file.
+-----------------------------------------------------------------------
+
+---------------------   System configuration   ----------------------
+Set the Php maximum file upload size bigger than 16MB.
+---------------------------------------------------------------------
+
+
+------------------------    Configurations   ------------------------
+The “program/drugCombination.inc” file is for configuring the database connection,
+needs to be put into “../dbincloc/” folder relative to root folder of “drugcombination”.
+
+The “program/dbconfig.inc” file is for configuring the database connection of “runremoteR.pl”.
+
+The “program/phpmailer” folder is for phpmailer.
+The “account.inc” file in “program/phpmailer” needs to be modified to change mail account.
+
+Make sure the “post_max_size” and “upload_max_filesize” in your “php.ini” file be set larger than 10M.
+Exact 10M will actually have a limit less than 10M, so it's better to set 12M.
+
+Create an empty “report” folder in “program/” folder.
+-----------------------------------------------------------------------
+
+
+-------------------------------   R library  --------------------------
+Make sure these R libraries are installed
+
+library(argparse)
+library(preprocessCore)
+library(org.Hs.eg.db)
+library(KEGGgraph)
+library(ggplot2)
+library(grid)
+library(doParallel)
+------------------------------------------------------------------------
+
+
+----------------------------- Crontab job ------------------------------------------
+The "runremoteR.pl" script needs to be added into crontab or run periodically.
+When setting the job, be sure to first change the working directory to the folder contain this file, then run the runremoteR.pl. For example:
+
+* * * * * cd /home/username/public_html/drugcombination/program; perl runremoteR.pl
+* * * * * sleep 10; cd /home/username/public_html/drugcombination/program; perl runremoteR.pl
+* * * * * sleep 20; cd /home/username/public_html/drugcombination/program; perl runremoteR.pl
+* * * * * sleep 30; cd /home/username/public_html/drugcombination/program; perl runremoteR.pl
+* * * * * sleep 40; cd /home/username/public_html/drugcombination/program; perl runremoteR.pl
+* * * * * sleep 50; cd /home/username/public_html/drugcombination/program; perl runremoteR.pl
+------------------------------------------------------------------------------------

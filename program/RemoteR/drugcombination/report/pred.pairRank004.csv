@@ -1,0 +1,16 @@
+"drugA","drugB","DIGRE.score","IUPUI.score","GS.score","DIGRE.rank"
+"Aclacinomycin A","Blebbistatin",0.00608,0.0089,0.0175208360432381,13.5
+"Aclacinomycin A","Camptothecin",0.74147,0.0149,0.0375466477288576,2
+"Aclacinomycin A","Cycloheximide",0.693325,0.0135,0.0238957243608479,3
+"Aclacinomycin A","Doxorubicin hydrochloride",0.7605,0.011,0.0258739009755883,1
+"Aclacinomycin A","Methotrexate",0.00608,0.0089,0.022301073161286,13.5
+"Blebbistatin","Camptothecin",0.01448,0.0159,0.0163467982657636,7.5
+"Blebbistatin","Cycloheximide",0.01354,0.0101,0.0112592002745083,9.5
+"Blebbistatin","Doxorubicin hydrochloride",0.01268,0.0089,0.0116219388474085,11.5
+"Blebbistatin","Methotrexate",0.00514,0.0091,0.0188433361253279,15
+"Camptothecin","Cycloheximide",0.401225,0.0367,0.0548953667169078,5
+"Camptothecin","Doxorubicin hydrochloride",0.648355,0.025,0.0461166189078812,4
+"Camptothecin","Methotrexate",0.01448,0.0309,0.0354742051365229,7.5
+"Cycloheximide","Doxorubicin hydrochloride",0.30374,0.0098,0.0203801317630909,6
+"Cycloheximide","Methotrexate",0.01354,0.0202,0.0318606528835866,9.5
+"Doxorubicin hydrochloride","Methotrexate",0.01268,0.0126,0.0168896417831881,11.5
